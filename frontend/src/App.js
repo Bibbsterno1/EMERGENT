@@ -153,7 +153,26 @@ function App() {
           
           {/* Card Footer */}
           <div className="px-6 py-3 bg-gray-50 border-t border-gray-200 text-right">
-            <button className="text-sm text-indigo-600 hover:text-indigo-800 focus:outline-none">
+            <button 
+              onClick={() => {
+                setLoading(true);
+                fetch(`${BACKEND_URL}/api/company-info?name=Acme Corporation`)
+                  .then(response => {
+                    if (!response.ok) throw new Error('Failed to refresh data');
+                    return response.json();
+                  })
+                  .then(data => {
+                    setCompanyInfo(data);
+                    setError(null);
+                  })
+                  .catch(err => {
+                    console.error("Error refreshing data:", err);
+                    setError("Failed to refresh data. Using cached data.");
+                  })
+                  .finally(() => setLoading(false));
+              }}
+              className="text-sm text-indigo-600 hover:text-indigo-800 focus:outline-none hover:underline"
+            >
               Refresh News
             </button>
           </div>

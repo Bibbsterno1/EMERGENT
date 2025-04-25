@@ -44,28 +44,24 @@ function App() {
   };
 
   useEffect(() => {
-    // Simulate API loading
-    const timer = setTimeout(() => {
-      setCompanyInfo(mockCompanyData);
-      setLoading(false);
-    }, 1000);
+    const fetchCompanyInfo = async () => {
+      try {
+        // Using the environment variable for backend URL
+        const response = await fetch(`${BACKEND_URL}/api/company-info?name=Acme Corporation`);
+        if (!response.ok) throw new Error('Failed to fetch company info');
+        const data = await response.json();
+        setCompanyInfo(data);
+      } catch (err) {
+        console.error("Error fetching company info:", err);
+        // Fallback to mock data if API fails
+        setCompanyInfo(mockCompanyData);
+        setError("Using sample data (API connection issue)");
+      } finally {
+        setLoading(false);
+      }
+    };
     
-    return () => clearTimeout(timer);
-    
-    // In the real implementation, we would fetch data from our backend:
-    // const fetchCompanyInfo = async () => {
-    //   try {
-    //     const response = await fetch(`${BACKEND_URL}/api/company-info?name=Acme`);
-    //     if (!response.ok) throw new Error('Failed to fetch company info');
-    //     const data = await response.json();
-    //     setCompanyInfo(data);
-    //   } catch (err) {
-    //     setError(err.message);
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
-    // fetchCompanyInfo();
+    fetchCompanyInfo();
   }, []);
 
   // Helper function to render quirk factor stars
